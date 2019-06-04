@@ -1,0 +1,3 @@
+---
+# tasks file for report-role
+- include: report.yml

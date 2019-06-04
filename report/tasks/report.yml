@@ -1,0 +1,54 @@
+    - name: add docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+    - name: Add docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ansible_facts['distribution_release']}} stable"
+        state: present
+        filename: docker
+    - name: Install docker-ce
+      apt:
+        name: "docker-ce"
+        update_cache: yes
+    - name: Create dir for report
+      file:
+        path: /tmp/report
+        state: directory
+    - name: Create HTML report
+      template:
+        src: report.j2
+        dest: /tmp/report/index.html
+    - name: Install python-docker
+      apt:
+        name: python-docker
+        update_cache: yes
+    - name: Create container
+      docker_container:
+        name: "{{ container_name }}"
+        image: "{{ image }}"
+        ports:
+          - "{{ src_port }}:{{ dest_port }}"
+        volumes:
+          - "{{ src_vol }}:{{ dest_vol }}"
+        privileged: "{{ privileged }}"
+    - name: Create Systemd Unit File as docker-{{ container_name }}.service
+      template:
+        src: systemd.j2
+        dest: /etc/systemd/system/docker-{{ container_name }}.service
+    - name: reload systemd daemon
+      command: systemctl daemon-reload
+    - name: Start & Enable docker-{{ container_name }} service
+      service:
+          name: docker-{{ container_name }}
+          state: started
+          enabled: yes
+    - name: Forward localhost connections from 666-676 ports to report page
+      iptables:
+        table: nat
+        chain: OUTPUT
+        destination: 127.0.0.1
+        protocol: tcp
+        destination_port: 666:676
+        jump: REDIRECT
+        to_ports: 1666

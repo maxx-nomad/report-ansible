@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body>
+<table>
+    <thead>
+        <tr>
+            <th>Hostname</th>
+            <th>IP address</th>
+            <th>OS</th>
+            <th>OS version</th>
+            <th>Kernel version</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{ansible_facts['hostname']}}</td>
+            <td>{{ansible_facts['default_ipv4']['address']}}</td>
+            <td>{{ansible_facts['distribution']}}</td>
+            <td>{{ansible_facts['distribution_version']}}</td>
+            <td>{{ansible_facts['kernel']}}</td>
+        </tr>
+    </tbody>
+</table>
+
+</body>
+</html>

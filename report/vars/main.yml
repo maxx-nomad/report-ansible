@@ -1,0 +1,9 @@
+---
+# vars file for report-role
+image: nginx:stable
+container_name: report
+src_port: 1666
+dest_port: 80
+src_vol: /tmp/report
+dest_vol: /usr/share/nginx/html
+privileged: true
